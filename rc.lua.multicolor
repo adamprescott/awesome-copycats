@@ -48,12 +48,14 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 run_once("nm-applet &")
-run_once("urxvtd")
-run_once("unclutter")
+--run_once("urxvtd")
+--run_once("unclutter")
 
 run_once("pulseaudio --start &")
 run_once("pa-applet &")
 run_once("thunar --daemon &")
+run_once("/home/adam/.dropbox-dist/dropboxd &")
+run_once("/usr/bin/btsync --config ~/.config/btsync/btsync.conf")
 -- }}}
 
 -- {{{ Variable definitions
@@ -93,8 +95,8 @@ local layouts = {
 
 -- {{{ Tags
 tags = {
-   names = { "web", "term", "docs", "media", "files", "other" },
-   layout = { layouts[1], layouts[3], layouts[4], layouts[1], layouts[7], layouts[1] }
+   names = { "web", "term", "docs", "media", "files", "comms", "sharedapps", "other" },
+   layout = { layouts[1], layouts[3], layouts[4], layouts[1], layouts[7], layouts[1], layouts[1], layouts[1] }
 }
 for s = 1, screen.count() do
 -- Each screen has its own tag table.
@@ -460,10 +462,10 @@ globalkeys = awful.util.table.join(
     end),
 
     -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
-    awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
-    awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
+    awful.key({ modkey, "Shift"   }, "Down", function () awful.client.swap.byidx(  1)    end),
+    awful.key({ modkey, "Shift"   }, "Up", function () awful.client.swap.byidx( -1)    end),
+    awful.key({ modkey, "Control" }, "Down", function () awful.screen.focus_relative( 1) end),
+    awful.key({ modkey, "Control" }, "Up", function () awful.screen.focus_relative(-1) end),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
     awful.key({ modkey,           }, "Tab",
         function ()
@@ -472,12 +474,12 @@ globalkeys = awful.util.table.join(
                 client.focus:raise()
             end
         end),
-    awful.key({ altkey, "Shift"   }, "l",      function () awful.tag.incmwfact( 0.05)     end),
-    awful.key({ altkey, "Shift"   }, "h",      function () awful.tag.incmwfact(-0.05)     end),
-    awful.key({ modkey, "Shift"   }, "l",      function () awful.tag.incnmaster(-1)       end),
-    awful.key({ modkey, "Shift"   }, "h",      function () awful.tag.incnmaster( 1)       end),
-    awful.key({ modkey, "Control" }, "l",      function () awful.tag.incncol(-1)          end),
-    awful.key({ modkey, "Control" }, "h",      function () awful.tag.incncol( 1)          end),
+    awful.key({ altkey, "Shift"   }, "Right",      function () awful.tag.incmwfact( 0.05)     end),
+    awful.key({ altkey, "Shift"   }, "Left",      function () awful.tag.incmwfact(-0.05)     end),
+    awful.key({ modkey, "Shift"   }, "Right",      function () awful.tag.incnmaster(-1)       end),
+    awful.key({ modkey, "Shift"   }, "Left",      function () awful.tag.incnmaster( 1)       end),
+    awful.key({ modkey, "Control" }, "Right",      function () awful.tag.incncol(-1)          end),
+    awful.key({ modkey, "Control" }, "Left",      function () awful.tag.incncol( 1)          end),
     awful.key({ modkey,           }, "space",  function () awful.layout.inc(layouts,  1)  end),
     awful.key({ modkey, "Shift"   }, "space",  function () awful.layout.inc(layouts, -1)  end),
     awful.key({ modkey, "Control" }, "n",      awful.client.restore),
@@ -674,6 +676,12 @@ awful.rules.rules = {
 
     { rule = { instance = "plugin-container" },
           properties = { tag = tags[1][1] } },
+    
+    -- Puts a Skype Call Window in the sharedapps tag and makes it floating and sticky
+    { rule = { role = "CallWindow" },
+          properties = { tag = tags[1][7],
+                         floating = true,
+                         sticky = true } },
 
 	  { rule = { class = "Gimp" },
      	    properties = { tag = tags[1][4] } },
